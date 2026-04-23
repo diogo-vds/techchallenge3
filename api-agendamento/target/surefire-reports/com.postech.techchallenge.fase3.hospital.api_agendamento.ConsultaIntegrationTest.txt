@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.postech.techchallenge.fase3.hospital.api_agendamento.ConsultaIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.182 s -- in com.postech.techchallenge.fase3.hospital.api_agendamento.ConsultaIntegrationTest

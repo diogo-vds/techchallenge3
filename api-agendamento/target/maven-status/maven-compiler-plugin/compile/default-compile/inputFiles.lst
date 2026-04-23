@@ -1,0 +1,14 @@
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\ApiAgendamentoApplication.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\AgendamentoController.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaRequest.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaResponse.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaUpdateRequest.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\ConsultaRepositoryImpl.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\entity\ConsultaEntity.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\repository\SpringConsultaRepository.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\application\usecase\ConsultaUseCaseImpl.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\model\Consulta.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\in\AtualizarConsultaCommand.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\in\ConsultaUseCase.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\in\CriarConsultaCommand.java
+C:\Projetos\Pós ADJT\TechChallenge\Modulo 3\api-agendamento\src\main\java\com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\out\ConsultaRepository.java

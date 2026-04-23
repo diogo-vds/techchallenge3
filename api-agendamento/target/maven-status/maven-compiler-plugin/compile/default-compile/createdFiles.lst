@@ -1,0 +1,15 @@
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\model\Consulta.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\out\ConsultaRepository.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaResponse.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\repository\SpringConsultaRepository.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\application\usecase\ConsultaUseCaseImpl.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\in\AtualizarConsultaCommand.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\in\ConsultaUseCase.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\port\in\CriarConsultaCommand.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\entity\ConsultaEntity.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\ConsultaRepositoryImpl.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaRequest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\entity\ConsultaEntity$ConsultaEntityBuilder.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\AgendamentoController.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\ApiAgendamentoApplication.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaUpdateRequest.class
