@@ -1,0 +1,36 @@
+type Historico {
+    id: ID!
+    usuarioId: String!
+    acao: String!
+    detalhes: String
+    dataHora: String!
+    entidadeId: String
+    tipoOperacao: String
+}
+
+input HistoricoInput {
+    usuarioId: String!
+    acao: String!
+    detalhes: String
+    entidadeId: String
+    tipoOperacao: String
+}
+
+input PeriodoInput {
+    inicio: String!
+    fim: String!
+}
+
+type Query {
+    historico(id: ID!): Historico
+    historicos: [Historico!]!
+    historicosPorUsuario(usuarioId: String!): [Historico!]!
+    historicosPorEntidade(entidadeId: String!): [Historico!]!
+    historicosPorAcao(acao: String!): [Historico!]!
+    historicosPorPeriodo(periodo: PeriodoInput!): [Historico!]!
+}
+
+type Mutation {
+    criarHistorico(historico: HistoricoInput!): Historico!
+    deletarHistorico(id: ID!): Boolean!
+}
