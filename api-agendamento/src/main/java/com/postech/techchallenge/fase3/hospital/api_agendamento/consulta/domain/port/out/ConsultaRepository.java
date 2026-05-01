@@ -2,6 +2,7 @@ package com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain
 
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.model.Consulta;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,4 +13,5 @@ public interface ConsultaRepository {
     Optional<Consulta> buscarPorId(UUID id);
     List<Consulta> listar();
     void deletar(UUID id);
+    boolean existeConflito(UUID profissionalId, LocalDateTime dataHora);
 }

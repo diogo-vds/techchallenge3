@@ -3,7 +3,9 @@ package com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapte
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapters.out.persistence.entity.ConsultaEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public interface SpringConsultaRepository extends JpaRepository<ConsultaEntity, UUID> {
+    boolean existsByProfissionalIdAndDataHora(UUID profissionalId, LocalDateTime dataHora);
 }

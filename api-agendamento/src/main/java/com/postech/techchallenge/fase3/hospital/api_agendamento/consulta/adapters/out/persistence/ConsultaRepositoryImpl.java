@@ -7,6 +7,7 @@ import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapter
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -57,5 +58,10 @@ public class ConsultaRepositoryImpl implements ConsultaRepository {
                 e.getDataHora(),
                 e.getDescricao()
         );
+    }
+
+    @Override
+    public boolean existeConflito(UUID profissionalId, LocalDateTime dataHora) {
+        return repository.existsByProfissionalIdAndDataHora(profissionalId, dataHora);
     }
 }

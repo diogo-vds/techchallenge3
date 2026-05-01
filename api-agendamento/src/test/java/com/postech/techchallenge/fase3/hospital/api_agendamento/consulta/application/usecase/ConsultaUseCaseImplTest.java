@@ -63,6 +63,8 @@ class ConsultaUseCaseImplTest {
                 descricao
         );
 
+        when(consultaRepository.existeConflito(profissionalId, dataHora))
+                .thenReturn(false);
         when(consultaRepository.salvar(any(Consulta.class)))
                 .thenReturn(consulta);
 
@@ -77,7 +79,30 @@ class ConsultaUseCaseImplTest {
         assertThat(resultado.getDataHora()).isEqualTo(dataHora);
         assertThat(resultado.getDescricao()).isEqualTo(descricao);
 
+        verify(consultaRepository, times(1)).existeConflito(profissionalId, dataHora);
         verify(consultaRepository, times(1)).salvar(any(Consulta.class));
+    }
+
+    @Test
+    void testCriarConsultaComConflito() {
+        // Arrange
+        CriarConsultaCommand command = new CriarConsultaCommand(
+                pacienteId,
+                profissionalId,
+                dataHora,
+                descricao
+        );
+
+        when(consultaRepository.existeConflito(profissionalId, dataHora))
+                .thenReturn(true);
+
+        // Act & Assert
+        assertThatThrownBy(() -> consultaUseCase.criar(command))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Já existe uma consulta para esse profissional neste horário");
+
+        verify(consultaRepository, times(1)).existeConflito(profissionalId, dataHora);
+        verify(consultaRepository, never()).salvar(any());
     }
 
     @Test
@@ -132,6 +157,8 @@ class ConsultaUseCaseImplTest {
 
         when(consultaRepository.buscarPorId(consultaId))
                 .thenReturn(Optional.of(consulta));
+        when(consultaRepository.existeConflito(profissionalId, novaDataHora))
+                .thenReturn(false);
         when(consultaRepository.salvar(any(Consulta.class)))
                 .thenReturn(consultaAtualizada);
 
@@ -145,6 +172,72 @@ class ConsultaUseCaseImplTest {
         assertThat(resultado.getDescricao()).isEqualTo(novaDescricao);
 
         verify(consultaRepository, times(1)).buscarPorId(consultaId);
+        verify(consultaRepository, times(1)).existeConflito(profissionalId, novaDataHora);
+        verify(consultaRepository, times(1)).salvar(any(Consulta.class));
+    }
+
+    @Test
+    void testAtualizarConsultaComConflito() {
+        // Arrange
+        LocalDateTime novaDataHora = dataHora.plusDays(2);
+        String novaDescricao = "Consulta de acompanhamento";
+
+        AtualizarConsultaCommand command = new AtualizarConsultaCommand(
+                novaDataHora,
+                novaDescricao
+        );
+
+        when(consultaRepository.buscarPorId(consultaId))
+                .thenReturn(Optional.of(consulta));
+        when(consultaRepository.existeConflito(profissionalId, novaDataHora))
+                .thenReturn(true);
+
+        // Act & Assert
+        assertThatThrownBy(() -> consultaUseCase.atualizar(consultaId, command))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Horário já ocupado");
+
+        verify(consultaRepository, times(1)).buscarPorId(consultaId);
+        verify(consultaRepository, times(1)).existeConflito(profissionalId, novaDataHora);
+        verify(consultaRepository, never()).salvar(any());
+    }
+
+    @Test
+    void testAtualizarConsultaMesmaDtHoraSSemConflito() {
+        // Arrange - Atualizar para a mesma data/hora não deve gerar conflito
+        String novaDescricao = "Descrição atualizada";
+
+        AtualizarConsultaCommand command = new AtualizarConsultaCommand(
+                dataHora,  // mesma data/hora
+                novaDescricao
+        );
+
+        Consulta consultaAtualizada = Consulta.reconstitute(
+                consultaId,
+                pacienteId,
+                profissionalId,
+                dataHora,
+                novaDescricao
+        );
+
+        when(consultaRepository.buscarPorId(consultaId))
+                .thenReturn(Optional.of(consulta));
+        when(consultaRepository.existeConflito(profissionalId, dataHora))
+                .thenReturn(true); // tem conflito, mas com a mesma data não deve falhar
+        when(consultaRepository.salvar(any(Consulta.class)))
+                .thenReturn(consultaAtualizada);
+
+        // Act
+        Consulta resultado = consultaUseCase.atualizar(consultaId, command);
+
+        // Assert
+        assertThat(resultado).isNotNull();
+        assertThat(resultado.getId()).isEqualTo(consultaId);
+        assertThat(resultado.getDataHora()).isEqualTo(dataHora);
+        assertThat(resultado.getDescricao()).isEqualTo(novaDescricao);
+
+        verify(consultaRepository, times(1)).buscarPorId(consultaId);
+        verify(consultaRepository, times(1)).existeConflito(profissionalId, dataHora);
         verify(consultaRepository, times(1)).salvar(any(Consulta.class));
     }
 
@@ -165,6 +258,48 @@ class ConsultaUseCaseImplTest {
                 .hasMessageContaining("Consulta não encontrada");
 
         verify(consultaRepository, times(1)).buscarPorId(consultaId);
+        verify(consultaRepository, never()).salvar(any());
+    }
+
+    @Test
+    void testCriarConsultaComDataNoPAssado() {
+        // Arrange
+        LocalDateTime dataPassada = LocalDateTime.now().minusDays(1);
+        CriarConsultaCommand command = new CriarConsultaCommand(
+                pacienteId,
+                profissionalId,
+                dataPassada,
+                descricao
+        );
+
+        // Act & Assert
+        assertThatThrownBy(() -> consultaUseCase.criar(command))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Não é permitido agendar consultas para datas no passado");
+
+        verify(consultaRepository, never()).existeConflito(any(), any());
+        verify(consultaRepository, never()).salvar(any());
+    }
+
+    @Test
+    void testAtualizarConsultaParaDataNoPAssado() {
+        // Arrange
+        LocalDateTime dataPassada = LocalDateTime.now().minusHours(1);
+        AtualizarConsultaCommand command = new AtualizarConsultaCommand(
+                dataPassada,
+                "Descrição atualizada"
+        );
+
+        when(consultaRepository.buscarPorId(consultaId))
+                .thenReturn(Optional.of(consulta));
+
+        // Act & Assert
+        assertThatThrownBy(() -> consultaUseCase.atualizar(consultaId, command))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Não é permitido agendar consultas para datas no passado");
+
+        verify(consultaRepository, times(1)).buscarPorId(consultaId);
+        verify(consultaRepository, never()).existeConflito(any(), any());
         verify(consultaRepository, never()).salvar(any());
     }
 
