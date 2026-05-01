@@ -317,7 +317,7 @@ class ConsultaIntegrationTest {
                 .andExpect(jsonPath("$.profissionalId", is(profissionalId.toString())))
                 .andExpect(jsonPath("$.descricao", is(novaDescricao)));
     }
-
+""
     @Test
     void testCriarConsultaComDataNoPAssado() throws Exception {
         // Tentar criar consulta com data no passado
