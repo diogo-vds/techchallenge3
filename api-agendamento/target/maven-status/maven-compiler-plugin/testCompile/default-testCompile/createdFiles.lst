@@ -1,2 +1,13 @@
-com\postech\techchallenge\fase3\hospital\api_agendamento\ApiAgendamentoApplicationTests.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\domain\model\ConsultaTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\application\usecase\ReagendarConsultaUseCaseImplTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\entity\ConsultaEntityTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\application\usecase\ConsultaUseCaseImplPacienteTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\application\usecase\CancelarConsultaUseCaseImplTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\application\usecase\ConsultaUseCaseImplTest.class
 com\postech\techchallenge\fase3\hospital\api_agendamento\ConsultaIntegrationTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\ReagendamentoIntegrationTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\CancelamentoIntegrationTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\out\persistence\ConsultaRepositoryImplTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\dto\ConsultaDtoTest.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\ApiAgendamentoApplicationTests.class
+com\postech\techchallenge\fase3\hospital\api_agendamento\consulta\adapters\in\web\AgendamentoControllerTest.class

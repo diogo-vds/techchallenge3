@@ -1,6 +1,10 @@
 package com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapters.in.web;
 
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.in.ConsultaUseCase;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.in.ReagendarConsultaCommand;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.in.CancelarConsultaCommand;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.application.usecase.ReagendarConsultaUseCaseImpl;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.application.usecase.CancelarConsultaUseCaseImpl;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapters.in.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,8 @@ import java.util.UUID;
 public class AgendamentoController {
 
     private final ConsultaUseCase useCase;
+    private final ReagendarConsultaUseCaseImpl reagendarUseCase;
+    private final CancelarConsultaUseCaseImpl cancelarUseCase;
 
     @PostMapping
     public ResponseEntity<ConsultaResponse> criar(@RequestBody ConsultaRequest request) {
@@ -46,5 +52,50 @@ public class AgendamentoController {
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         useCase.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/reagendar")
+    public ResponseEntity<ReagendarConsultaResponse> reagendar(@PathVariable UUID id,
+                                                               @RequestBody ReagendarConsultaRequest request) {
+        ReagendarConsultaCommand command = new ReagendarConsultaCommand(
+                id,
+                request.getNovaDataHora(),
+                request.getMotivo()
+        );
+        var consultaOriginal = useCase.buscarPorId(id);
+        var consultaSalva = reagendarUseCase.reagendar(command);
+        
+        // Buscar histórico de reagendamentos da consulta original
+        var reagendamentos = reagendarUseCase.buscarHistorico(id);
+        var ultimoReagendamento = reagendamentos.isEmpty() ? null : reagendamentos.get(reagendamentos.size() - 1);
+        
+        if (ultimoReagendamento != null) {
+            return ResponseEntity.ok(new ReagendarConsultaResponse(
+                    consultaOriginal,
+                    consultaSalva,
+                    ultimoReagendamento
+            ));
+        }
+        
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/reagendamentos")
+    public List<ReagendamentoResponse> listarReagendamentos(@PathVariable UUID id) {
+        return reagendarUseCase.buscarHistorico(id)
+                .stream()
+                .map(ReagendamentoResponse::new)
+                .toList();
+    }
+
+    @PostMapping("/{id}/cancelar")
+    public ResponseEntity<CancelarConsultaResponse> cancelar(@PathVariable UUID id,
+                                                             @RequestBody CancelarConsultaRequest request) {
+        CancelarConsultaCommand command = new CancelarConsultaCommand(
+                id,
+                request.getMotivo()
+        );
+        var consultaCancelada = cancelarUseCase.cancelar(command);
+        return ResponseEntity.ok(new CancelarConsultaResponse(consultaCancelada));
     }
 }

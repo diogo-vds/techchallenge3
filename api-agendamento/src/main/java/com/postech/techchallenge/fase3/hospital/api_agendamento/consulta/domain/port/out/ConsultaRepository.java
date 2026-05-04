@@ -14,4 +14,7 @@ public interface ConsultaRepository {
     List<Consulta> listar();
     void deletar(UUID id);
     boolean existeConflito(UUID profissionalId, LocalDateTime dataHora);
+    boolean profissionalAtivo(UUID profissionalId);
+    boolean pacienteTemConsultaMesmoHorario(UUID pacienteId, LocalDateTime dataHora);
+    int contarConsultasAtivasPaciente(UUID pacienteId);
 }

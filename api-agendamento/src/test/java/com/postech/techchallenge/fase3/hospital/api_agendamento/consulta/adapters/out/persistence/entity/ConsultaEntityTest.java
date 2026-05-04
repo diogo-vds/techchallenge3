@@ -48,13 +48,13 @@ class ConsultaEntityTest {
     @Test
     void testCriarConsultaEntityComConstructor() {
         // Act
-        ConsultaEntity entity = new ConsultaEntity(
-                consultaId,
-                pacienteId,
-                profissionalId,
-                dataHora,
-                descricao
-        );
+        ConsultaEntity entity = ConsultaEntity.builder()
+                .id(UUID.randomUUID())
+                .pacienteId(UUID.randomUUID())
+                .profissionalId(UUID.randomUUID())
+                .dataHora(LocalDateTime.now())
+                .descricao("Teste")
+                .build();
 
         // Assert
         assertThat(entity).isNotNull();

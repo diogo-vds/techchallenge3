@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface SpringConsultaRepository extends JpaRepository<ConsultaEntity, UUID> {
     boolean existsByProfissionalIdAndDataHora(UUID profissionalId, LocalDateTime dataHora);
+    boolean existsByPacienteIdAndDataHoraAndAtivaTrue(UUID pacienteId, LocalDateTime dataHora);
+    int countByPacienteIdAndAtivaTrue(UUID pacienteId);
 }

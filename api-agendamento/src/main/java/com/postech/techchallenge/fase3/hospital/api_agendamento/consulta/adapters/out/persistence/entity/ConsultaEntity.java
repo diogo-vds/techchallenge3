@@ -22,4 +22,17 @@ public class ConsultaEntity {
     private UUID profissionalId;
     private LocalDateTime dataHora;
     private String descricao;
+
+    @Column(name = "ativa", nullable = false)
+    @Builder.Default
+    private boolean ativa = true;
+
+    @Column(name = "original_id")
+    private UUID originalId;
+
+    @Column(name = "data_cancelamento")
+    private LocalDateTime dataCancelamento;
+
+    @Column(name = "motivo_cancelamento", length = 500)
+    private String motivoCancelamento;
 }

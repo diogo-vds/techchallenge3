@@ -135,6 +135,239 @@
         "header": []
       },
       "response": []
+    },
+    {
+      "name": "Reagendar consulta",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"novaDataHora\": \"2026-05-10T16:00:00\",\r\n  \"motivo\": \"Conflito com outro compromisso\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos/da995070-8df5-44d7-9b6c-eacdd8449c8a/reagendar",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos",
+            "da995070-8df5-44d7-9b6c-eacdd8449c8a",
+            "reagendar"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar reagendamentos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos/da995070-8df5-44d7-9b6c-eacdd8449c8a/reagendamentos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos",
+            "da995070-8df5-44d7-9b6c-eacdd8449c8a",
+            "reagendamentos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Cancelar consulta",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"motivo\": \"Paciente não pode comparecer\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos/da995070-8df5-44d7-9b6c-eacdd8449c8a/cancelar",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos",
+            "da995070-8df5-44d7-9b6c-eacdd8449c8a",
+            "cancelar"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Teste: Criar consulta fora horário comercial",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"pacienteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"profissionalId\": \"22222222-2222-2222-2222-222222222222\",\r\n  \"dataHora\": \"2026-05-05T22:00:00\",\r\n  \"descricao\": \"Consulta fora horário\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Teste: Criar consulta no passado",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"pacienteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"profissionalId\": \"22222222-2222-2222-2222-222222222222\",\r\n  \"dataHora\": \"2025-01-01T10:00:00\",\r\n  \"descricao\": \"Consulta no passado\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Teste: Criar consulta em sábado",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"pacienteId\": \"11111111-1111-1111-1111-111111111111\",\r\n  \"profissionalId\": \"22222222-2222-2222-2222-222222222222\",\r\n  \"dataHora\": \"2026-05-10T14:00:00\",\r\n  \"descricao\": \"Consulta em sábado\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Teste: Reagendar com menos de 24h",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"novaDataHora\": \"2026-05-05T15:00:00\",\r\n  \"motivo\": \"Teste de antecedência\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos/da995070-8df5-44d7-9b6c-eacdd8449c8a/reagendar",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos",
+            "da995070-8df5-44d7-9b6c-eacdd8449c8a",
+            "reagendar"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Teste: Cancelar com menos de 2h",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"motivo\": \"Teste de antecedência\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/v1/agendamentos/da995070-8df5-44d7-9b6c-eacdd8449c8a/cancelar",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "v1",
+            "agendamentos",
+            "da995070-8df5-44d7-9b6c-eacdd8449c8a",
+            "cancelar"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }

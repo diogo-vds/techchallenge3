@@ -317,7 +317,7 @@ class ConsultaIntegrationTest {
                 .andExpect(jsonPath("$.profissionalId", is(profissionalId.toString())))
                 .andExpect(jsonPath("$.descricao", is(novaDescricao)));
     }
-""
+
     @Test
     void testCriarConsultaComDataNoPAssado() throws Exception {
         // Tentar criar consulta com data no passado
@@ -423,5 +423,247 @@ class ConsultaIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.dataHora", notNullValue()));
     }
-}
 
+    @Test
+    void testCriarConsultaForaDoHorarioComercial() throws Exception {
+        // Tentar criar consulta fora do horário comercial (22:00)
+        LocalDateTime dataHoraForaHorario = LocalDateTime.now()
+                .plusDays(1)
+                .withHour(22)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        ConsultaRequest request = new ConsultaRequest();
+        request.setPacienteId(pacienteId);
+        request.setProfissionalId(profissionalId);
+        request.setDataHora(dataHoraForaHorario);
+        request.setDescricao(descricao);
+
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCriarConsultaMuitoCedoForaHorarioComercial() throws Exception {
+        // Tentar criar consulta muito cedo (07:00)
+        LocalDateTime dataHoraForaHorario = LocalDateTime.now()
+                .plusDays(1)
+                .withHour(7)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        ConsultaRequest request = new ConsultaRequest();
+        request.setPacienteId(pacienteId);
+        request.setProfissionalId(profissionalId);
+        request.setDataHora(dataHoraForaHorario);
+        request.setDescricao(descricao);
+
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCriarConsultaEmSabado() throws Exception {
+        // Tentar criar consulta em sábado
+        LocalDateTime proximoSabado = LocalDateTime.now().plusDays(1);
+        while (proximoSabado.getDayOfWeek().getValue() != 6) { // 6 = sábado
+            proximoSabado = proximoSabado.plusDays(1);
+        }
+        proximoSabado = proximoSabado.withHour(14).withMinute(0);
+
+        ConsultaRequest request = new ConsultaRequest();
+        request.setPacienteId(pacienteId);
+        request.setProfissionalId(profissionalId);
+        request.setDataHora(proximoSabado);
+        request.setDescricao(descricao);
+
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCriarConsultaEmDomingo() throws Exception {
+        // Tentar criar consulta em domingo
+        LocalDateTime proximoDomingo = LocalDateTime.now().plusDays(1);
+        while (proximoDomingo.getDayOfWeek().getValue() != 7) { // 7 = domingo
+            proximoDomingo = proximoDomingo.plusDays(1);
+        }
+        proximoDomingo = proximoDomingo.withHour(14).withMinute(0);
+
+        ConsultaRequest request = new ConsultaRequest();
+        request.setPacienteId(pacienteId);
+        request.setProfissionalId(profissionalId);
+        request.setDataHora(proximoDomingo);
+        request.setDescricao(descricao);
+
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCriarConsultaDuranteHorarioComercial() throws Exception {
+        // Criar consulta dentro do horário comercial (14:00) em um dia útil
+        LocalDateTime dataHorasComercial = LocalDateTime.now()
+                .plusDays(1)
+                .withHour(14)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        // Garantir que não seja fim de semana
+        while (dataHorasComercial.getDayOfWeek().getValue() >= 6) {
+            dataHorasComercial = dataHorasComercial.plusDays(1);
+        }
+
+        ConsultaRequest request = new ConsultaRequest();
+        request.setPacienteId(pacienteId);
+        request.setProfissionalId(profissionalId);
+        request.setDataHora(dataHorasComercial);
+        request.setDescricao(descricao);
+
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", notNullValue()));
+    }
+
+    @Test
+    void testCriarConsultaPacienteMesmoHorario() throws Exception {
+        // 1. Criar primeira consulta para o paciente
+        var consultaRequest1 = criarConsultaRequest();
+        MvcResult criarResult1 = mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest1)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // 2. Tentar criar segunda consulta no mesmo horário para o mesmo paciente
+        var consultaRequest2 = criarConsultaRequest(dataHora); // Mesmo horário
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest2)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCriarConsultaPacienteLimiteConsultasSimultaneas() throws Exception {
+        // 1. Criar 3 consultas para o mesmo paciente
+        for (int i = 0; i < 3; i++) {
+            LocalDateTime dataHoraConsulta = dataHora.plusDays(i + 1);
+            var consultaRequest = criarConsultaRequest(dataHoraConsulta);
+            mockMvc.perform(post("/v1/agendamentos")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(consultaRequest)))
+                    .andExpect(status().isOk());
+        }
+
+        // 2. Tentar criar 4ª consulta (deve falhar)
+        LocalDateTime dataHoraQuarta = dataHora.plusDays(4);
+        var consultaRequest4 = criarConsultaRequest(dataHoraQuarta);
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest4)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCriarConsultaPacienteDiferentesHorarios() throws Exception {
+        // 1. Criar primeira consulta
+        var consultaRequest1 = criarConsultaRequest();
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest1)))
+                .andExpect(status().isOk());
+
+        // 2. Criar segunda consulta em horário diferente (deve funcionar)
+        LocalDateTime dataHora2 = dataHora.plusHours(2);
+        var consultaRequest2 = criarConsultaRequest(dataHora2);
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest2)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testAtualizarConsultaPacienteConflitoHorario() throws Exception {
+        // 1. Criar primeira consulta
+        var consultaRequest1 = criarConsultaRequest();
+        MvcResult criarResult1 = mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest1)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String consultaId1 = objectMapper.readTree(criarResult1.getResponse().getContentAsString())
+                .get("id").asText();
+
+        // 2. Criar segunda consulta em horário diferente
+        LocalDateTime dataHora2 = dataHora.plusDays(1);
+        var consultaRequest2 = criarConsultaRequest(dataHora2);
+        MvcResult criarResult2 = mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest2)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String consultaId2 = objectMapper.readTree(criarResult2.getResponse().getContentAsString())
+                .get("id").asText();
+
+        // 3. Tentar atualizar segunda consulta para o horário da primeira (deve falhar)
+        ConsultaUpdateRequest updateRequest = new ConsultaUpdateRequest();
+        updateRequest.setDataHora(dataHora); // Horário da primeira consulta
+        updateRequest.setDescricao("Tentativa de conflito");
+
+        mockMvc.perform(put("/v1/agendamentos/{id}", consultaId2)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testPacientePodeTerConsultasComProfissionaisDiferentes() throws Exception {
+        // 1. Criar consulta com primeiro profissional
+        var consultaRequest1 = criarConsultaRequest();
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest1)))
+                .andExpect(status().isOk());
+
+        // 2. Criar consulta no mesmo horário com profissional diferente (deve funcionar)
+        UUID profissionalId2 = UUID.randomUUID();
+        var consultaRequest2 = new com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapters.in.web.dto.ConsultaRequest();
+        consultaRequest2.setPacienteId(pacienteId); // Mesmo paciente
+        consultaRequest2.setProfissionalId(profissionalId2); // Profissional diferente
+        consultaRequest2.setDataHora(dataHora); // Mesmo horário
+        consultaRequest2.setDescricao("Consulta com outro profissional");
+
+        mockMvc.perform(post("/v1/agendamentos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(consultaRequest2)))
+                .andExpect(status().isBadRequest()); // Deve falhar por conflito de paciente
+    }
+
+    private ConsultaRequest criarConsultaRequest() {
+        return criarConsultaRequest(LocalDateTime.now().plusDays(1));
+    }
+
+    private ConsultaRequest criarConsultaRequest(LocalDateTime dataHora) {
+        var req = new ConsultaRequest();
+        req.setPacienteId(UUID.randomUUID());
+        req.setProfissionalId(UUID.randomUUID());
+        req.setDataHora(dataHora);
+        req.setDescricao("Teste");
+        return req;
+    }
+}
