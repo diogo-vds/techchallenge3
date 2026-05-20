@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "historico")
@@ -16,23 +16,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class HistoricoEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Column(nullable = false)
-    private String usuarioId;
+    private UUID pacienteId;
 
     @Column(nullable = false)
-    private String acao;
-
-    @Column(columnDefinition = "TEXT")
-    private String detalhes;
+    private UUID profissionalId;
 
     @Column(nullable = false)
     private LocalDateTime dataHora;
 
-    private String entidadeId;
-
-    private String tipoOperacao;
-
+    @Column(columnDefinition = "TEXT")
+    private String descricao;
 }

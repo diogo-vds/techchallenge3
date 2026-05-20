@@ -7,10 +7,10 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,8 +20,8 @@ public class HistoricoGraphQLController {
     private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     @QueryMapping
-    public Historico historico(@Argument Long id) {
-        return historicoService.buscarPorId(id)
+    public Historico historico(@Argument String id) {
+        return historicoService.buscarPorId(UUID.fromString(id))
                 .orElseThrow(() -> new RuntimeException("Histórico não encontrado com id: " + id));
     }
 
@@ -31,46 +31,42 @@ public class HistoricoGraphQLController {
     }
 
     @QueryMapping
-    public List<Historico> historicosPorUsuario(@Argument String usuarioId) {
-        return historicoService.buscarPorUsuario(usuarioId);
+    public List<Historico> historicosPorPaciente(@Argument String pacienteId) {
+        return historicoService.buscarPorPaciente(UUID.fromString(pacienteId));
     }
 
     @QueryMapping
-    public List<Historico> historicosPorEntidade(@Argument String entidadeId) {
-        return historicoService.buscarPorEntidade(entidadeId);
+    public List<Historico> historicosPorProfissional(@Argument String profissionalId) {
+        return historicoService.buscarPorProfissional(UUID.fromString(profissionalId));
     }
 
     @QueryMapping
-    public List<Historico> historicosPorAcao(@Argument String acao) {
-        return historicoService.buscarPorAcao(acao);
-    }
-
-    @QueryMapping
-    public List<Historico> historicosPorPeriodo(@Argument PeriodoInput periodo) {
-        LocalDateTime inicio = LocalDateTime.parse(periodo.getInicio(), formatter);
-        LocalDateTime fim = LocalDateTime.parse(periodo.getFim(), formatter);
-        // Implementar no service se necessário
-        return List.of();
+    public List<Historico> historicosPorPeriodo(@Argument String inicio, @Argument String fim) {
+        LocalDateTime dataInicio = LocalDateTime.parse(inicio, formatter);
+        LocalDateTime dataFim = LocalDateTime.parse(fim, formatter);
+        return historicoService.buscarPorPeriodo(dataInicio, dataFim);
     }
 
     @MutationMapping
-    public Historico criarHistorico(@Argument HistoricoInput historico) {
+    public Historico criarHistorico(@Argument String pacienteId,
+                                    @Argument String profissionalId,
+                                    @Argument String descricao,
+                                    @Argument String dataHora) {
         Historico novoHistorico = Historico.builder()
-                .usuarioId(historico.getUsuarioId())
-                .acao(historico.getAcao())
-                .detalhes(historico.getDetalhes())
-                .entidadeId(historico.getEntidadeId())
-                .tipoOperacao(historico.getTipoOperacao())
-                .dataHora(LocalDateTime.now())
+                .id(UUID.randomUUID())
+                .pacienteId(UUID.fromString(pacienteId))
+                .profissionalId(UUID.fromString(profissionalId))
+                .descricao(descricao)
+                .dataHora(dataHora != null ? LocalDateTime.parse(dataHora, formatter) : LocalDateTime.now())
                 .build();
 
         return historicoService.salvar(novoHistorico);
     }
 
     @MutationMapping
-    public Boolean deletarHistorico(@Argument Long id) {
+    public Boolean deletarHistorico(@Argument String id) {
         try {
-            historicoService.deletar(id);
+            historicoService.deletar(UUID.fromString(id));
             return true;
         } catch (Exception e) {
             return false;

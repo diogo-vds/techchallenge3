@@ -5,26 +5,30 @@ import com.postech.techchallenge.fase3.hospital.historico.domain.port.HistoricoR
 import com.postech.techchallenge.fase3.hospital.historico.domain.port.HistoricoServicePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class HistoricoService implements HistoricoServicePort {
 
     private final HistoricoRepositoryPort repository;
+
     @Override
     public Historico salvar(Historico historico) {
         if (historico.getDataHora() == null) {
             historico.setDataHora(LocalDateTime.now());
         }
+        if (historico.getId() == null) {
+            historico.setId(UUID.randomUUID());
+        }
         return repository.save(historico);
     }
 
     @Override
-    public Optional<Historico> buscarPorId(Long id) {
+    public Optional<Historico> buscarPorId(UUID id) {
         return repository.findById(id);
     }
 
@@ -34,22 +38,22 @@ public class HistoricoService implements HistoricoServicePort {
     }
 
     @Override
-    public List<Historico> buscarPorUsuario(String usuarioId) {
-        return repository.findByUsuarioId(usuarioId);
+    public List<Historico> buscarPorPaciente(UUID pacienteId) {
+        return repository.findByPacienteId(pacienteId);
     }
 
     @Override
-    public List<Historico> buscarPorEntidade(String entidadeId) {
-        return repository.findByEntidadeId(entidadeId);
+    public List<Historico> buscarPorProfissional(UUID profissionalId) {
+        return repository.findByProfissionalId(profissionalId);
     }
 
     @Override
-    public List<Historico> buscarPorAcao(String acao) {
-        return repository.findByAcao(acao);
+    public List<Historico> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return repository.findByPeriodo(inicio, fim);
     }
 
     @Override
-    public void deletar(Long id) {
+    public void deletar(UUID id) {
         repository.deleteById(id);
     }
 }

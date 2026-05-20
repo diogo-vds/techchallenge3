@@ -1,13 +1,12 @@
-package com.postech.techchallenge.fase3.hospital.historico.domain.model;
+package com.postech.techchallenge.fase3.hospital.historico.infrastructure.client;
 
-import lombok.Builder;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Builder
-public class Historico {
+public class ConsultaResponse {
     private UUID id;
     private UUID pacienteId;
     private UUID profissionalId;

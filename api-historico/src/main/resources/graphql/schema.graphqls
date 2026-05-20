@@ -1,36 +1,21 @@
+# src/main/resources/graphql/schema.graphqls
 type Historico {
     id: ID!
-    usuarioId: String!
-    acao: String!
-    detalhes: String
+    pacienteId: String!
+    profissionalId: String!
     dataHora: String!
-    entidadeId: String
-    tipoOperacao: String
-}
-
-input HistoricoInput {
-    usuarioId: String!
-    acao: String!
-    detalhes: String
-    entidadeId: String
-    tipoOperacao: String
-}
-
-input PeriodoInput {
-    inicio: String!
-    fim: String!
+    descricao: String
 }
 
 type Query {
     historico(id: ID!): Historico
     historicos: [Historico!]!
-    historicosPorUsuario(usuarioId: String!): [Historico!]!
-    historicosPorEntidade(entidadeId: String!): [Historico!]!
-    historicosPorAcao(acao: String!): [Historico!]!
-    historicosPorPeriodo(periodo: PeriodoInput!): [Historico!]!
+    historicosPorPaciente(pacienteId: String!): [Historico!]!
+    historicosPorProfissional(profissionalId: String!): [Historico!]!
+    historicosPorPeriodo(inicio: String!, fim: String!): [Historico!]!
 }
 
 type Mutation {
-    criarHistorico(historico: HistoricoInput!): Historico!
+    criarHistorico(pacienteId: String!, profissionalId: String!, descricao: String, dataHora: String): Historico!
     deletarHistorico(id: ID!): Boolean!
 }

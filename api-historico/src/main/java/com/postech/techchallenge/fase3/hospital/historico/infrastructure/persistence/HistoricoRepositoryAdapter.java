@@ -4,15 +4,15 @@ import com.postech.techchallenge.fase3.hospital.historico.domain.model.Historico
 import com.postech.techchallenge.fase3.hospital.historico.domain.port.HistoricoRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class HistoricoRepositoryAdapter  implements HistoricoRepositoryPort {
+public class HistoricoRepositoryAdapter implements HistoricoRepositoryPort {
 
     private final HistoricoJpaRepository jpaRepository;
 
@@ -23,7 +23,7 @@ public class HistoricoRepositoryAdapter  implements HistoricoRepositoryPort {
     }
 
     @Override
-    public Optional<Historico> findById(Long id) {
+    public Optional<Historico> findById(UUID id) {
         return jpaRepository.findById(id).map(this::toDomain);
     }
 
@@ -35,22 +35,15 @@ public class HistoricoRepositoryAdapter  implements HistoricoRepositoryPort {
     }
 
     @Override
-    public List<Historico> findByUsuarioId(String usuarioId) {
-        return jpaRepository.findByUsuarioId(usuarioId).stream()
+    public List<Historico> findByPacienteId(UUID pacienteId) {
+        return jpaRepository.findByPacienteId(pacienteId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Historico> findByEntidadeId(String entidadeId) {
-        return jpaRepository.findByEntidadeId(entidadeId).stream()
-                .map(this::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Historico> findByAcao(String acao) {
-        return jpaRepository.findByAcao(acao).stream()
+    public List<Historico> findByProfissionalId(UUID profissionalId) {
+        return jpaRepository.findByProfissionalId(profissionalId).stream()
                 .map(this::toDomain)
                 .collect(Collectors.toList());
     }
@@ -63,31 +56,27 @@ public class HistoricoRepositoryAdapter  implements HistoricoRepositoryPort {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
 
     private HistoricoEntity toEntity(Historico historico) {
         return HistoricoEntity.builder()
                 .id(historico.getId())
-                .usuarioId(historico.getUsuarioId())
-                .acao(historico.getAcao())
-                .detalhes(historico.getDetalhes())
+                .pacienteId(historico.getPacienteId())
+                .profissionalId(historico.getProfissionalId())
                 .dataHora(historico.getDataHora())
-                .entidadeId(historico.getEntidadeId())
-                .tipoOperacao(historico.getTipoOperacao())
+                .descricao(historico.getDescricao())
                 .build();
     }
 
     private Historico toDomain(HistoricoEntity entity) {
         return Historico.builder()
                 .id(entity.getId())
-                .usuarioId(entity.getUsuarioId())
-                .acao(entity.getAcao())
-                .detalhes(entity.getDetalhes())
+                .pacienteId(entity.getPacienteId())
+                .profissionalId(entity.getProfissionalId())
                 .dataHora(entity.getDataHora())
-                .entidadeId(entity.getEntidadeId())
-                .tipoOperacao(entity.getTipoOperacao())
+                .descricao(entity.getDescricao())
                 .build();
     }
 }

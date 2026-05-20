@@ -1,17 +1,17 @@
 package com.postech.techchallenge.fase3.hospital.historico.domain.port;
 
 import com.postech.techchallenge.fase3.hospital.historico.domain.model.Historico;
-
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface HistoricoServicePort {
-
     Historico salvar(Historico historico);
-    Optional<Historico> buscarPorId(Long id);
+    Optional<Historico> buscarPorId(UUID id);
     List<Historico> buscarTodos();
-    List<Historico> buscarPorUsuario(String usuarioId);
-    List<Historico> buscarPorEntidade(String entidadeId);
-    List<Historico> buscarPorAcao(String acao);
-    void deletar(Long id);
+    List<Historico> buscarPorPaciente(UUID pacienteId);
+    List<Historico> buscarPorProfissional(UUID profissionalId);
+    List<Historico> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+    void deletar(UUID id);
 }

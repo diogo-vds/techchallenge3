@@ -1,23 +1,12 @@
+consulta:
+  api:
+    url: http://localhost:8080  # URL da API de consultas
+
 spring:
   graphql:
     graphiql:
       enabled: true
       path: /graphiql
-    schema:
-      locations:
-        - classpath:graphql/**/
-      printer:
-        enabled: true
-    websocket:
-      path: /graphql
-      connection-init-timeout: 60
-    cors:
-      allowed-origins: "*"
-      allowed-methods: GET, POST, PUT, DELETE, OPTIONS
-      allowed-headers: "*"
-      allow-credentials: true
-    tools:
-      schema-location-pattern: "**/*.graphqls"
 
   datasource:
     url: jdbc:h2:mem:historicodb
@@ -36,6 +25,13 @@ spring:
       enabled: true
       path: /h2-console
 
-logging:
-  level:
-    com.example.historico: DEBUG
+server:
+  port: 8081
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
