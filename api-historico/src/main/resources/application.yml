@@ -1,6 +1,6 @@
 consulta:
   api:
-    url: http://localhost:8082/consultas  # URL da API de consultas
+    url: http://localhost:8082  # URL da API de consultas
 
 spring:
   graphql:

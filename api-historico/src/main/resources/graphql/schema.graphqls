@@ -1,4 +1,14 @@
 # src/main/resources/graphql/schema.graphqls
+
+# ==================== TIPOS ====================
+type Consulta {
+    id: ID!
+    pacienteId: String!
+    profissionalId: String!
+    dataHora: String!
+    descricao: String
+}
+
 type Historico {
     id: ID!
     pacienteId: String!
@@ -7,15 +17,45 @@ type Historico {
     descricao: String
 }
 
+# ==================== QUERIES (GET) ====================
 type Query {
-    historico(id: ID!): Historico
+    # Consultas (do FeignClient)
+    consultas: [Consulta!]!
+    consulta(id: ID!): Consulta
+    consultasPorPaciente(pacienteId: String!): [Consulta!]!
+    consultasPorProfissional(profissionalId: String!): [Consulta!]!
+    consultasPorPeriodo(inicio: String!, fim: String!): [Consulta!]!
+
+    # Históricos (do banco local)
     historicos: [Historico!]!
+    historico(id: ID!): Historico
     historicosPorPaciente(pacienteId: String!): [Historico!]!
     historicosPorProfissional(profissionalId: String!): [Historico!]!
     historicosPorPeriodo(inicio: String!, fim: String!): [Historico!]!
 }
 
+# ==================== MUTATIONS ====================
 type Mutation {
-    criarHistorico(pacienteId: String!, profissionalId: String!, descricao: String, dataHora: String): Historico!
-    deletarHistorico(id: ID!): Boolean!
+    # CRUD do Histórico
+    criarHistorico(
+        pacienteId: String!,
+        profissionalId: String!,
+        descricao: String,
+        dataHora: String
+    ): Historico!
+
+    atualizarHistorico(
+        id: String!,
+        pacienteId: String,
+        profissionalId: String,
+        descricao: String,
+        dataHora: String
+    ): Historico!
+
+    deletarHistorico(id: String!): Boolean!
+    deletarHistoricosPorPaciente(pacienteId: String!): Int!
+
+    # Sincronização com o serviço de agendamento
+    sincronizarConsulta(consultaId: String!): Historico!
+    sincronizarTodasConsultas: Int!
 }
