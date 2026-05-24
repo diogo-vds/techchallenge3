@@ -1,6 +1,6 @@
 consulta:
   api:
-    url: http://localhost:8082  # URL da API de consultas
+    url: ${CONSULTA_API_URL:http://localhost:8082}
 
 spring:
   graphql:
@@ -9,15 +9,15 @@ spring:
       path: /graphiql
 
   datasource:
-    url: jdbc:h2:mem:historicodb
+    url: ${DATABASE_URL:jdbc:h2:mem:historicodb}
     driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
 
   h2:
@@ -26,7 +26,7 @@ spring:
       path: /h2-console
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 feign:
   client:
