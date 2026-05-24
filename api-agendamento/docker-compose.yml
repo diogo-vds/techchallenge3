@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    # You might need to add environment variables here, e.g., for database connection
+    # environment:
+    #   SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydatabase
+    #   SPRING_DATASOURCE_USERNAME: myuser
+    #   SPRING_DATASOURCE_PASSWORD: mypassword
+    # depends_on:
+    #   - db
+    # networks:
+    #   - mynetwork
+
+# If you have a database, define it here
+# volumes:
+#   db-data:
+
+# networks:
+#   mynetwork:
