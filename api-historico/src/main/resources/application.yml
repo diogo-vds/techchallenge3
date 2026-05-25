@@ -1,12 +1,12 @@
 consulta:
   api:
-    url: ${CONSULTA_API_URL:http://localhost:8082}
+    url: ${CONSULTA_API_URL:http://localhost:8080/v1}
 
 spring:
   graphql:
     graphiql:
       enabled: true
-      path: /graphiql
+      path: /graphql
 
   datasource:
     url: ${DATABASE_URL:jdbc:h2:mem:historicodb}

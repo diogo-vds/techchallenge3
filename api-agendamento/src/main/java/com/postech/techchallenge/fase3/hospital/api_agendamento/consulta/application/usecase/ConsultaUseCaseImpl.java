@@ -3,6 +3,8 @@ package com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.applic
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.model.Consulta;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.in.*;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.out.ConsultaRepository;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.dto.NotificacaoRequest;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.feign.NotificacaoClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class ConsultaUseCaseImpl implements ConsultaUseCase {
 
     private final ConsultaRepository repository;
+    private final NotificacaoClient notificacaoClient;
 
     // Horário comercial: 08:00 às 18:00
     private static final int HORA_INICIO_COMERCIAL = 8;
@@ -67,7 +70,17 @@ public class ConsultaUseCaseImpl implements ConsultaUseCase {
                 command.dataHora(),
                 command.descricao()
         );
-        return repository.salvar(consulta);
+        Consulta savedConsulta = repository.salvar(consulta);
+
+        // Enviar notificação
+        NotificacaoRequest notificacaoRequest = new NotificacaoRequest(
+                savedConsulta.getPacienteId(),
+                savedConsulta.getProfissionalId(),
+                savedConsulta.getDataHora()
+        );
+        notificacaoClient.enviarNotificacaoConsulta(notificacaoRequest);
+
+        return savedConsulta;
     }
 
     @Override

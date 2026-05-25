@@ -8,6 +8,6 @@ import java.util.List;
 @FeignClient(name = "consulta-client", url = "${consulta.api.url}")
 public interface ConsultaClient {
 
-    @GetMapping("/consultas")
+    @GetMapping("/agendamentos")
     List<ConsultaResponse> listarConsultas();
 }
