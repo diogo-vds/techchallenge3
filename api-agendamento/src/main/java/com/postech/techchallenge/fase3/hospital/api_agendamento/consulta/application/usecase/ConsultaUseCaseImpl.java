@@ -3,8 +3,8 @@ package com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.applic
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.model.Consulta;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.in.*;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.out.ConsultaRepository;
-import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.dto.NotificacaoRequest;
-import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.feign.NotificacaoClient;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.dto.ConsultaNotificationMessage;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.rabbitmq.ConsultaNotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ConsultaUseCaseImpl implements ConsultaUseCase {
 
     private final ConsultaRepository repository;
-    private final NotificacaoClient notificacaoClient;
+    private final ConsultaNotificationSender consultaNotificationSender;
 
     // Horário comercial: 08:00 às 18:00
     private static final int HORA_INICIO_COMERCIAL = 8;
@@ -72,13 +72,13 @@ public class ConsultaUseCaseImpl implements ConsultaUseCase {
         );
         Consulta savedConsulta = repository.salvar(consulta);
 
-        // Enviar notificação
-        NotificacaoRequest notificacaoRequest = new NotificacaoRequest(
+        // Enviar notificação via RabbitMQ
+        ConsultaNotificationMessage notificationMessage = new ConsultaNotificationMessage(
                 savedConsulta.getPacienteId(),
                 savedConsulta.getProfissionalId(),
                 savedConsulta.getDataHora()
         );
-        notificacaoClient.enviarNotificacaoConsulta(notificacaoRequest);
+        consultaNotificationSender.sendConsultaNotification(notificationMessage);
 
         return savedConsulta;
     }
