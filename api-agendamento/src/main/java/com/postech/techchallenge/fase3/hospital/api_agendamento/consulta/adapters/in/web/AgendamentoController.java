@@ -8,6 +8,7 @@ import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.applica
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapters.in.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class AgendamentoController {
         return ResponseEntity.ok(new ConsultaResponse(consulta));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEDICO')")
     @GetMapping
     public List<ConsultaResponse> listar() {
         return useCase.listar().stream()
@@ -48,6 +50,7 @@ public class AgendamentoController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         useCase.deletar(id);
