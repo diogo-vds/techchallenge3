@@ -8,7 +8,6 @@ import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.applica
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapters.in.web.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
