@@ -80,27 +80,6 @@ Todos os endpoints de agendamento são protegidos.
 
 ---
 
-# LOGIN
-
-Endpoint:
-
-POST /auth/login
-
-Body:
-
-{
-"email": "admin@hospital.com",
-"password": "123456"
-}
-
-Resposta:
-
-{
-"token": "eyJhbGciOiJIUzI1NiJ9..."
-}
-
----
-
 # COMO USAR TOKEN JWT
 
 Após obter o token, envie no header:
