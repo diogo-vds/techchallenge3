@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,8 +48,14 @@ class ReagendarConsultaUseCaseImplTest {
         consultaId = UUID.randomUUID();
         pacienteId = UUID.randomUUID();
         profissionalId = UUID.randomUUID();
-        dataHora = LocalDateTime.now().plusDays(3);
-        novaDataHora = LocalDateTime.now().plusDays(5);
+        
+        // Ensure dates are on a weekday during business hours (14:00)
+        LocalDateTime base = LocalDateTime.now().plusDays(3);
+        while (base.getDayOfWeek().getValue() >= 6) { // 6 = Saturday, 7 = Sunday
+            base = base.plusDays(1);
+        }
+        dataHora = proximoHorarioComercial(base.plusDays(1));
+        novaDataHora = proximoHorarioComercial(base.plusDays(3));
 
         consulta = Consulta.reconstitute(
                 consultaId,
@@ -300,5 +307,20 @@ class ReagendarConsultaUseCaseImplTest {
 
         // Assert
         assertThat(resultado).isEmpty();
+    }
+
+    private LocalDateTime proximoHorarioComercial(LocalDateTime data) {
+        LocalDateTime resultado = data
+                .withHour(14)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
+
+        while (resultado.getDayOfWeek() == DayOfWeek.SATURDAY ||
+                resultado.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            resultado = resultado.plusDays(1);
+        }
+
+        return resultado;
     }
 }

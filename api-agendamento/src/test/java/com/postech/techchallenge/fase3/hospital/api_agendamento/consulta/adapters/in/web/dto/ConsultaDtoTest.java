@@ -22,7 +22,13 @@ class ConsultaDtoTest {
     void setUp() {
         pacienteId = UUID.randomUUID();
         profissionalId = UUID.randomUUID();
-        dataHora = LocalDateTime.now().plusDays(1);
+        
+        // Ensure datetime is on a weekday during business hours (14:00)
+        LocalDateTime nextDay = LocalDateTime.now().plusDays(1);
+        while (nextDay.getDayOfWeek().getValue() >= 6) { // 6 = Saturday, 7 = Sunday
+            nextDay = nextDay.plusDays(1);
+        }
+        dataHora = nextDay.withHour(14).withMinute(0).withSecond(0).withNano(0);
         descricao = "Consulta de rotina";
     }
 
