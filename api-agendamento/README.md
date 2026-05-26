@@ -69,6 +69,28 @@ curl -X GET http://localhost:8080/v1/agendamentos
 ```
 
 ---
+###  **AUTENTICAÇÃO JWT**
+
+A API utiliza:
+
+- Spring Security
+- JWT Stateless Authentication
+
+Todos os endpoints de agendamento são protegidos.
+
+---
+
+# COMO USAR TOKEN JWT
+
+Após obter o token, envie no header:
+
+Authorization: Bearer SEU_TOKEN
+
+Exemplo:
+
+GET /v1/agendamentos
+Authorization: Bearer eyJhbGciOi...
+---
 
 ## 🎯 VALIDAÇÕES IMPLEMENTADAS
 
