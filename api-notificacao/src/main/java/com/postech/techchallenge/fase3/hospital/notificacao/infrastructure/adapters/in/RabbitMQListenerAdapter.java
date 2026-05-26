@@ -2,6 +2,8 @@ package com.postech.techchallenge.fase3.hospital.notificacao.infrastructure.adap
 
 import com.postech.techchallenge.fase3.hospital.notificacao.application.ports.in.NotificacaoUseCase;
 import com.postech.techchallenge.fase3.hospital.notificacao.domain.model.ConsultaEvento;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RabbitMQListenerAdapter {
 
+    private static final Logger log = LoggerFactory.getLogger(RabbitMQListenerAdapter.class);
     private final NotificacaoUseCase notificacaoUseCase;
 
     @Value("${rabbitmq.queue.name}")
@@ -18,18 +21,9 @@ public class RabbitMQListenerAdapter {
         this.notificacaoUseCase = notificacaoUseCase;
     }
 
-    // Existing listener for ConsultaEvento
-//    @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void receiveConsultaEvento(ConsultaEvento evento) {
-        System.out.println("Received ConsultaEvento from consulta_events_queue: " + evento.toString());
-        notificacaoUseCase.enviarLembrete(evento);
-    }
-
-    // New listener for formatted consultation notification messages
     @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void receiveConsultaNotificationMessage(String message) {
-        System.out.println("Received consultation notification message from " + consultaNotificationQueueName + ": " + message);
-        // Here you would typically process the notification message, e.g., send an SMS, email, etc.
-        // For now, we'll just log it.
+    public void receiveConsultaNotificationMessage(ConsultaEvento message) {
+        log.info("Mensagem de notificação recebida da fila {} e status: {} ", consultaNotificationQueueName, message.status());
+        notificacaoUseCase.enviarLembrete(message);
     }
 }

@@ -72,15 +72,25 @@ public class ConsultaUseCaseImpl implements ConsultaUseCase {
         );
         Consulta savedConsulta = repository.salvar(consulta);
 
+        this.enviaNotificacao(savedConsulta);
+
+        return savedConsulta;
+    }
+
+    private void enviaNotificacao(Consulta savedConsulta) {
         // Enviar notificação via RabbitMQ
         ConsultaNotificationMessage notificationMessage = new ConsultaNotificationMessage(
                 savedConsulta.getPacienteId(),
                 savedConsulta.getProfissionalId(),
-                savedConsulta.getDataHora()
+                savedConsulta.getDataHora(),
+                "agendado"
         );
-        consultaNotificationSender.sendConsultaNotification(notificationMessage);
-
-        return savedConsulta;
+        try {
+            consultaNotificationSender.sendConsultaNotification(notificationMessage);
+        } catch (Exception e) {
+            // Logar o erro, mas não impedir o agendamento da consulta
+            System.err.println("Erro ao enviar notificação: " + e.getMessage());
+        }
     }
 
     @Override

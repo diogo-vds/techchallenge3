@@ -18,17 +18,17 @@ public class NotificacaoService implements NotificacaoUseCase {
 
     @Override
     public void enviarLembrete(ConsultaEvento evento) {
-        String assunto = "Lembrete de Consulta: " + evento.pacienteNome();
-        String dataFormatada = evento.dataHorario().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        String assunto = "Lembrete de Consulta: " + evento.pacienteId();
+        String dataFormatada = evento.dataConsulta().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
         
         String corpo = String.format(
-            "Olá %s,\n\nEste é um lembrete da sua consulta com o(a) Dr(a). %s agendada para %s.\n\nStatus: %s",
-            evento.pacienteNome(),
-            evento.medicoNome(),
+            "\n\nOlá %s,\n\nEste é um lembrete da sua consulta com o(a) Dr(a). %s agendada para %s.\n\nStatus: %s\n\n",
+            evento.pacienteId(),
+            evento.profissionalId(),
             dataFormatada,
             evento.status()
         );
 
-        emailServicePort.enviarEmail(evento.pacienteEmail(), assunto, corpo);
+        emailServicePort.enviarEmail(assunto, corpo);
     }
 }
