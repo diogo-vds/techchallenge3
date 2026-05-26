@@ -14,7 +14,7 @@ public class ConsultaScheduler {
 
     private final SincronizacaoConsultaService sincronizacaoService;
 
-    // Executar a cada 5 minutos
+
     @Scheduled(fixedDelay = 60000)
     public void sincronizarConsultasAutomatico() {
         log.info("Iniciando sincronização automática de consultas...");
