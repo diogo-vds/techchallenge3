@@ -18,3 +18,7 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+target/classes
+target/test-classes
+target/maven-status
