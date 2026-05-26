@@ -29,7 +29,6 @@ public class AgendamentoController {
         return ResponseEntity.ok(new ConsultaResponse(consulta));
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'MEDICO')")
     @GetMapping
     public List<ConsultaResponse> listar() {
         return useCase.listar().stream()
@@ -50,7 +49,6 @@ public class AgendamentoController {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         useCase.deletar(id);
