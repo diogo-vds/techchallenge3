@@ -41,7 +41,13 @@ class ConsultaUseCaseImplTest {
         consultaId = UUID.randomUUID();
         pacienteId = UUID.randomUUID();
         profissionalId = UUID.randomUUID();
-        dataHora = LocalDateTime.now().plusDays(1);
+        
+        // Ensure datetime is on a weekday during business hours (14:00)
+        LocalDateTime nextDay = LocalDateTime.now().plusDays(1);
+        while (nextDay.getDayOfWeek().getValue() >= 6) { // 6 = Saturday, 7 = Sunday
+            nextDay = nextDay.plusDays(1);
+        }
+        dataHora = nextDay.withHour(14).withMinute(0).withSecond(0).withNano(0);
         descricao = "Consulta de rotina";
 
         consulta = Consulta.reconstitute(
@@ -63,6 +69,8 @@ class ConsultaUseCaseImplTest {
                 descricao
         );
 
+        when(consultaRepository.profissionalAtivo(profissionalId))
+                .thenReturn(true);
         when(consultaRepository.existeConflito(profissionalId, dataHora))
                 .thenReturn(false);
         when(consultaRepository.salvar(any(Consulta.class)))
@@ -93,6 +101,8 @@ class ConsultaUseCaseImplTest {
                 descricao
         );
 
+        when(consultaRepository.profissionalAtivo(profissionalId))
+                .thenReturn(true);
         when(consultaRepository.existeConflito(profissionalId, dataHora))
                 .thenReturn(true);
 
@@ -157,6 +167,8 @@ class ConsultaUseCaseImplTest {
 
         when(consultaRepository.buscarPorId(consultaId))
                 .thenReturn(Optional.of(consulta));
+        when(consultaRepository.profissionalAtivo(profissionalId))
+                .thenReturn(true);
         when(consultaRepository.existeConflito(profissionalId, novaDataHora))
                 .thenReturn(false);
         when(consultaRepository.salvar(any(Consulta.class)))
@@ -189,6 +201,8 @@ class ConsultaUseCaseImplTest {
 
         when(consultaRepository.buscarPorId(consultaId))
                 .thenReturn(Optional.of(consulta));
+        when(consultaRepository.profissionalAtivo(profissionalId))
+                .thenReturn(true);
         when(consultaRepository.existeConflito(profissionalId, novaDataHora))
                 .thenReturn(true);
 
@@ -222,6 +236,8 @@ class ConsultaUseCaseImplTest {
 
         when(consultaRepository.buscarPorId(consultaId))
                 .thenReturn(Optional.of(consulta));
+        when(consultaRepository.profissionalAtivo(profissionalId))
+                .thenReturn(true);
         when(consultaRepository.existeConflito(profissionalId, dataHora))
                 .thenReturn(true); // tem conflito, mas com a mesma data não deve falhar
         when(consultaRepository.salvar(any(Consulta.class)))
@@ -277,6 +293,7 @@ class ConsultaUseCaseImplTest {
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Não é permitido agendar consultas para datas no passado");
 
+        verify(consultaRepository, never()).profissionalAtivo(any());
         verify(consultaRepository, never()).existeConflito(any(), any());
         verify(consultaRepository, never()).salvar(any());
     }
@@ -290,15 +307,13 @@ class ConsultaUseCaseImplTest {
                 "Descrição atualizada"
         );
 
-        when(consultaRepository.buscarPorId(consultaId))
-                .thenReturn(Optional.of(consulta));
-
         // Act & Assert
         assertThatThrownBy(() -> consultaUseCase.atualizar(consultaId, command))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Não é permitido agendar consultas para datas no passado");
 
-        verify(consultaRepository, times(1)).buscarPorId(consultaId);
+        // Date validation should occur before repository call
+        verify(consultaRepository, never()).buscarPorId(any());
         verify(consultaRepository, never()).existeConflito(any(), any());
         verify(consultaRepository, never()).salvar(any());
     }
