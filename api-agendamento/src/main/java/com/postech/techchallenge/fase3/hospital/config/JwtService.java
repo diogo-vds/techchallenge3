@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap; // Import HashMap
@@ -28,11 +30,13 @@ public class JwtService {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", List.of("ROLE_USER")); // Add roles claim
         claims.put(Claims.SUBJECT, "test-user"); // Explicitly set subject in claims
-
+        Date expiration = Date.from(
+                Instant.now().plus(1, ChronoUnit.DAYS)
+        );
         return Jwts.builder()
-                .setClaims(claims) // Set all claims at once
+                .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(Date.from(Instant.ofEpochSecond(expiration)))
+                .setExpiration(expiration)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
