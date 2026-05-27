@@ -3,6 +3,8 @@ package com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.applic
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.model.Consulta;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.in.*;
 import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.domain.port.out.ConsultaRepository;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.dto.ConsultaNotificationMessage;
+import com.postech.techchallenge.fase3.hospital.api_agendamento.shared.rabbitmq.ConsultaNotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.UUID;
 public class ConsultaUseCaseImpl implements ConsultaUseCase {
 
     private final ConsultaRepository repository;
+    private final ConsultaNotificationSender consultaNotificationSender;
 
     // Horário comercial: 08:00 às 18:00
     private static final int HORA_INICIO_COMERCIAL = 8;
@@ -67,7 +70,27 @@ public class ConsultaUseCaseImpl implements ConsultaUseCase {
                 command.dataHora(),
                 command.descricao()
         );
-        return repository.salvar(consulta);
+        Consulta savedConsulta = repository.salvar(consulta);
+
+        this.enviaNotificacao(savedConsulta);
+
+        return savedConsulta;
+    }
+
+    private void enviaNotificacao(Consulta savedConsulta) {
+        // Enviar notificação via RabbitMQ
+        ConsultaNotificationMessage notificationMessage = new ConsultaNotificationMessage(
+                savedConsulta.getPacienteId(),
+                savedConsulta.getProfissionalId(),
+                savedConsulta.getDataHora(),
+                "agendado"
+        );
+        try {
+            consultaNotificationSender.sendConsultaNotification(notificationMessage);
+        } catch (Exception e) {
+            // Logar o erro, mas não impedir o agendamento da consulta
+            System.err.println("Erro ao enviar notificação: " + e.getMessage());
+        }
     }
 
     @Override

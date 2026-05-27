@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.13</version>
+		<version>3.2.5</version> <!-- Corrected Spring Boot version -->
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.postech.techchallenge.fase3.hospital</groupId>
@@ -28,12 +28,15 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<spring-cloud.version>2023.0.1</spring-cloud.version>
+		<lombok.version>1.18.30</lombok.version> <!-- Added Lombok version property -->
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -52,12 +55,18 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version> <!-- Using Lombok version property -->
 			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<!-- RabbitMQ Dependency -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -80,7 +89,25 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- Spring Security Test -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>
@@ -106,6 +133,7 @@
 					<path>
 						<groupId>org.projectlombok</groupId>
 						<artifactId>lombok</artifactId>
+						<version>${lombok.version}</version> <!-- Using Lombok version property -->
 					</path>
 				</annotationProcessorPaths>
 			</configuration>
@@ -121,6 +149,7 @@
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version> <!-- Using Lombok version property -->
 							</path>
 						</annotationProcessorPaths>
 					</configuration>
@@ -136,6 +165,7 @@
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
+								<version>${lombok.version}</version> <!-- Using Lombok version property -->
 							</path>
 						</annotationProcessorPaths>
 					</configuration>

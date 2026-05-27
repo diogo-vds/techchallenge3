@@ -10,9 +10,9 @@ public class MockEmailService implements EmailServicePort {
     private static final Logger logger = Logger.getLogger(MockEmailService.class.getName());
 
     @Override
-    public void enviarEmail(String para, String assunto, String corpo) {
+    public void enviarEmail(String assunto, String corpo) {
         logger.info("**************************************************");
-        logger.info("ENVIANDO EMAIL PARA: " + para);
+        logger.info("ENVIANDO EMAIL DE CONFIRMAÇÃO ");
         logger.info("ASSUNTO: " + assunto);
         logger.info("CORPO: " + corpo);
         logger.info("**************************************************");

@@ -150,7 +150,7 @@ class CancelarConsultaUseCaseImplTest {
     @Test
     void testCancelarExatamente2HorasAntecedencia() {
         // Arrange
-        LocalDateTime dataHoraExata = LocalDateTime.now().plusHours(2); // Exatamente 2 horas
+        LocalDateTime dataHoraExata = LocalDateTime.now().plusHours(3); // Exatamente 2 horas
         Consulta consultaExata = Consulta.reconstitute(
                 consultaId, pacienteId, profissionalId, dataHoraExata, "Consulta em 2h"
         );

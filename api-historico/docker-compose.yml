@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  api-historico:
+    build: .
+    container_name: api-historico
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - CONSULTA_API_URL=http://api-consulta:8080
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,37 @@
+consulta:
+  api:
+    url: ${CONSULTA_API_URL:http://localhost:8080/v1}
+
+spring:
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphql
+
+  datasource:
+    url: ${DATABASE_URL:jdbc:h2:mem:historicodb}
+    driver-class-name: org.h2.Driver
+    username: ${DATABASE_USERNAME:sa}
+    password: ${DATABASE_PASSWORD:}
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: ${SERVER_PORT:8081}
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full

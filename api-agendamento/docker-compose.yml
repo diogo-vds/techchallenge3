@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  api-agendamento:
+    build: . # Assumes a Dockerfile exists in the current directory
+    ports:
+      - "8080:8080"
+    environment:
+      RABBITMQ_HOST: host.docker.internal # Connects to RabbitMQ running on the host machine
+    # No depends_on for rabbitmq since it's external
