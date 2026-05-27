@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap; // Import HashMap
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class JwtService {
@@ -21,9 +25,12 @@ public class JwtService {
     private Long expiration;
 
     public String generateToken() {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", List.of("ROLE_USER")); // Add roles claim
+        claims.put(Claims.SUBJECT, "test-user"); // Explicitly set subject in claims
 
         return Jwts.builder()
-                .setSubject("techchallenge-api")
+                .setClaims(claims) // Set all claims at once
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.ofEpochSecond(expiration)))
                 .signWith(SignatureAlgorithm.HS256, secret)
