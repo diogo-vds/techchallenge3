@@ -9,6 +9,7 @@ import com.postech.techchallenge.fase3.hospital.api_agendamento.consulta.adapter
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,7 @@ public class AgendamentoController {
     private final ReagendarConsultaUseCaseImpl reagendarUseCase;
     private final CancelarConsultaUseCaseImpl cancelarUseCase;
 
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     @PostMapping
     public ResponseEntity<ConsultaResponse> criar(@RequestBody ConsultaRequest request) {
         var consulta = useCase.criar(request.toCommand());
@@ -35,11 +37,13 @@ public class AgendamentoController {
                 .toList();
     }
 
+    @PreAuthorize("hasAnyRole('MEDICO','ENFERMEIRO')")
     @GetMapping("/{id}")
     public ConsultaResponse buscar(@PathVariable UUID id) {
         return new ConsultaResponse(useCase.buscarPorId(id));
     }
 
+    @PreAuthorize("hasRole('MEDICO')")
     @PutMapping("/{id}")
     public ConsultaResponse atualizar(@PathVariable UUID id,
                                       @RequestBody ConsultaUpdateRequest request) {
