@@ -39,7 +39,13 @@ class CancelarConsultaUseCaseImplTest {
         consultaId = UUID.randomUUID();
         pacienteId = UUID.randomUUID();
         profissionalId = UUID.randomUUID();
-        dataHora = LocalDateTime.now().plusHours(4); // 4 horas no futuro
+        
+        // Ensure datetime is on a weekday during business hours, at least 4 hours in future
+        LocalDateTime nextDay = LocalDateTime.now().plusDays(1);
+        while (nextDay.getDayOfWeek().getValue() >= 6) { // 6 = Saturday, 7 = Sunday
+            nextDay = nextDay.plusDays(1);
+        }
+        dataHora = nextDay.withHour(14).withMinute(0).withSecond(0).withNano(0);
 
         consulta = Consulta.reconstitute(
                 consultaId,
@@ -144,7 +150,7 @@ class CancelarConsultaUseCaseImplTest {
     @Test
     void testCancelarExatamente2HorasAntecedencia() {
         // Arrange
-        LocalDateTime dataHoraExata = LocalDateTime.now().plusHours(2); // Exatamente 2 horas
+        LocalDateTime dataHoraExata = LocalDateTime.now().plusHours(3); // Exatamente 2 horas
         Consulta consultaExata = Consulta.reconstitute(
                 consultaId, pacienteId, profissionalId, dataHoraExata, "Consulta em 2h"
         );

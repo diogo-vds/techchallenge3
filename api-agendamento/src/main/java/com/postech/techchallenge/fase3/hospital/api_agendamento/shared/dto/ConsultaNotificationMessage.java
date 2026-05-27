@@ -17,4 +17,5 @@ public class ConsultaNotificationMessage implements Serializable {
     private UUID pacienteId;
     private UUID profissionalId;
     private LocalDateTime dataConsulta;
+    private String status;
 }

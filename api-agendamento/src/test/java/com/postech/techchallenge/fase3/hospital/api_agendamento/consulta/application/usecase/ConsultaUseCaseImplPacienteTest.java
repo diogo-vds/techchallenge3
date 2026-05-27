@@ -38,8 +38,18 @@ class ConsultaUseCaseImplPacienteTest {
     void setUp() {
         pacienteId = UUID.randomUUID();
         profissionalId = UUID.randomUUID();
-        dataHora = LocalDateTime.now().plusDays(1).withHour(10).withMinute(0);
-        novaDataHora = LocalDateTime.now().plusDays(2).withHour(14).withMinute(0);
+        // Ensure dates are on a weekday during business hours
+        LocalDateTime day1 = LocalDateTime.now().plusDays(1);
+        while (day1.getDayOfWeek().getValue() >= 6) { // 6 = Saturday, 7 = Sunday
+            day1 = day1.plusDays(1);
+        }
+        dataHora = day1.withHour(10).withMinute(0).withSecond(0).withNano(0);
+        
+        LocalDateTime day2 = day1.plusDays(1);
+        while (day2.getDayOfWeek().getValue() >= 6) {
+            day2 = day2.plusDays(1);
+        }
+        novaDataHora = day2.withHour(14).withMinute(0).withSecond(0).withNano(0);
     }
 
     @Test

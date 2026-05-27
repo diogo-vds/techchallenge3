@@ -13,4 +13,5 @@ public class Historico {
     private UUID profissionalId;
     private LocalDateTime dataHora;
     private String descricao;
+
 }
