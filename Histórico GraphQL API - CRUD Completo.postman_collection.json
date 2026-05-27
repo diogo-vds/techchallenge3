@@ -1,0 +1,624 @@
+{
+  "info": {
+    "_postman_id": "7defc9f2-c562-427b-8723-79a902924277",
+    "name": "Histórico GraphQL API - CRUD Completo",
+    "description": "API para gerenciar histórico de consultas médicas com GraphQL\n\n- Consultas (GET): Buscam dados do serviço de agendamento via FeignClient\n- Histórico (CRUD): Operações no banco local\n- Sincronização: Copia consultas do FeignClient para o banco local",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48731114",
+    "_collection_link": "https://go.postman.co/collection/48731114-7defc9f2-c562-427b-8723-79a902924277?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1. Consultas (FeignClient - Serviço Externo)",
+      "item": [
+        {
+          "name": "Listar Todas as Consultas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"{\\n  consultas {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Consulta por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($id: ID!) {\\n  consulta(id: $id) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"id\": \"123e4567-e89b-12d3-a456-426614174000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Consultas por Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($pacienteId: String!) {\\n  consultasPorPaciente(pacienteId: $pacienteId) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"pacienteId\": \"550e8400-e29b-41d4-a716-446655440000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Consultas por Profissional",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($profissionalId: String!) {\\n  consultasPorProfissional(profissionalId: $profissionalId) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"profissionalId\": \"660e8400-e29b-41d4-a716-446655440001\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Consultas por Período",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($inicio: String!, $fim: String!) {\\n  consultasPorPeriodo(inicio: $inicio, fim: $fim) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"inicio\": \"2026-05-01T00:00:00\",\n        \"fim\": \"2026-05-31T23:59:59\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Histórico (Banco Local - CRUD)",
+      "item": [
+        {
+          "name": "Listar Todos os Históricos",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"{\\n  historicos {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Histórico por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($id: ID!) {\\n  historico(id: $id) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"id\": \"123e4567-e89b-12d3-a456-426614174000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Históricos por Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($pacienteId: String!) {\\n  historicosPorPaciente(pacienteId: $pacienteId) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"pacienteId\": \"550e8400-e29b-41d4-a716-446655440000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Históricos por Profissional",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($profissionalId: String!) {\\n  historicosPorProfissional(profissionalId: $profissionalId) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"profissionalId\": \"660e8400-e29b-41d4-a716-446655440001\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Históricos por Período",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"query($inicio: String!, $fim: String!) {\\n  historicosPorPeriodo(inicio: $inicio, fim: $fim) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"inicio\": \"2026-05-01T00:00:00\",\n        \"fim\": \"2026-05-31T23:59:59\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Mutations - Criar/Atualizar/Deletar",
+      "item": [
+        {
+          "name": "Criar Novo Histórico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation(\\n  $pacienteId: String!,\\n  $profissionalId: String!,\\n  $descricao: String,\\n  $dataHora: String\\n) {\\n  criarHistorico(\\n    pacienteId: $pacienteId,\\n    profissionalId: $profissionalId,\\n    descricao: $descricao,\\n    dataHora: $dataHora\\n  ) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"pacienteId\": \"550e8400-e29b-41d4-a716-446655440000\",\n        \"profissionalId\": \"660e8400-e29b-41d4-a716-446655440001\",\n        \"descricao\": \"Nova consulta registrada no histórico\",\n        \"dataHora\": \"2026-05-20T10:00:00\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Atualizar Histórico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation(\\n  $id: String!,\\n  $pacienteId: String,\\n  $profissionalId: String,\\n  $descricao: String,\\n  $dataHora: String\\n) {\\n  atualizarHistorico(\\n    id: $id,\\n    pacienteId: $pacienteId,\\n    profissionalId: $profissionalId,\\n    descricao: $descricao,\\n    dataHora: $dataHora\\n  ) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n        \"descricao\": \"Descrição atualizada - Paciente retornou para reavaliação\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Histórico por ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation($id: String!) {\\n  deletarHistorico(id: $id)\\n}\",\n    \"variables\": {\n        \"id\": \"123e4567-e89b-12d3-a456-426614174000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deletar Históricos por Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation($pacienteId: String!) {\\n  deletarHistoricosPorPaciente(pacienteId: $pacienteId)\\n}\",\n    \"variables\": {\n        \"pacienteId\": \"550e8400-e29b-41d4-a716-446655440000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Sincronização (FeignClient → Banco Local)",
+      "item": [
+        {
+          "name": "Sincronizar Consulta Específica",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation($consultaId: String!) {\\n  sincronizarConsulta(consultaId: $consultaId) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\",\n    \"variables\": {\n        \"consultaId\": \"123e4567-e89b-12d3-a456-426614174000\"\n    }\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sincronizar Todas as Consultas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"mutation {\\n  sincronizarTodasConsultas\\n}\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Exemplos com Dados Reais",
+      "item": [
+        {
+          "name": "Criar Múltiplos Históricos (Exemplos)",
+          "item": [
+            {
+              "name": "Histórico - Consulta Cardiológica",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"query\": \"mutation {\\n  criarHistorico(\\n    pacienteId: \\\"550e8400-e29b-41d4-a716-446655440000\\\",\\n    profissionalId: \\\"660e8400-e29b-41d4-a716-446655440001\\\",\\n    descricao: \\\"Consulta cardiológica - Paciente com histórico de hipertensão\\\",\\n    dataHora: \\\"2026-05-20T09:00:00\\\"\\n  ) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8081/graphql",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "graphql"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Histórico - Consulta Dermatológica",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"query\": \"mutation {\\n  criarHistorico(\\n    pacienteId: \\\"770e8400-e29b-41d4-a716-446655440002\\\",\\n    profissionalId: \\\"880e8400-e29b-41d4-a716-446655440003\\\",\\n    descricao: \\\"Consulta dermatológica - Avaliação de pintas suspeitas\\\",\\n    dataHora: \\\"2026-05-19T14:30:00\\\"\\n  ) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8081/graphql",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "graphql"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Histórico - Consulta Pediátrica",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"query\": \"mutation {\\n  criarHistorico(\\n    pacienteId: \\\"990e8400-e29b-41d4-a716-446655440004\\\",\\n    profissionalId: \\\"aaa8400-e29b-41d4-a716-446655440005\\\",\\n    descricao: \\\"Consulta pediátrica - Vacinação e desenvolvimento\\\",\\n    dataHora: \\\"2026-05-21T11:00:00\\\"\\n  ) {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\"\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:8081/graphql",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "graphql"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Fluxo Completo: Buscar → Sincronizar → Consultar Histórico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"query\": \"# 1. Buscar consultas do serviço externo\\n{\\n  consultas {\\n    id\\n    pacienteId\\n    profissionalId\\n    dataHora\\n    descricao\\n  }\\n}\\n\\n# 2. Sincronizar uma consulta específica\\n# mutation {\\n#   sincronizarConsulta(consultaId: \\\"123e4567-e89b-12d3-a456-426614174000\\\") {\\n#     id\\n#     pacienteId\\n#   }\\n# }\\n\\n# 3. Verificar histórico sincronizado\\n# {\\n#   historicos {\\n#     id\\n#     pacienteId\\n#     profissionalId\\n#     dataHora\\n#     descricao\\n#   }\\n# }\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8081/graphql",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8081",
+              "path": [
+                "graphql"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "paciente_id",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string"
+    },
+    {
+      "key": "profissional_id",
+      "value": "660e8400-e29b-41d4-a716-446655440001",
+      "type": "string"
+    },
+    {
+      "key": "consulta_id",
+      "value": "123e4567-e89b-12d3-a456-426614174000",
+      "type": "string"
+    }
+  ]
+}
